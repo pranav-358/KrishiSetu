@@ -3,29 +3,26 @@ import { createTheme } from '@mui/material/styles';
 export const theme = createTheme({
   palette: {
     primary: {
-      main: '#2e7d32', // Deep nature green
+      main: '#2e7d32', // Leaf Green
       light: '#60ad5e',
       dark: '#005005',
     },
     secondary: {
-      main: '#8d6e63', // Earthy brown
+      main: '#8d6e63', // Earth Brown
     },
     background: {
-      default: '#f9fbe7', // Very light green/white tint
+      default: '#f9fbe7',
       paper: '#ffffff',
     },
   },
   typography: {
     fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
-    h5: {
-      fontWeight: 600,
-    },
     button: {
-      textTransform: 'none', // Better readability for rural users
-      fontSize: '1.1rem',
+      textTransform: 'none',
+      fontSize: '1.05rem',
     }
   },
   shape: {
-    borderRadius: 12, // Softer, modern rounded corners
+    borderRadius: 12,
   },
 });

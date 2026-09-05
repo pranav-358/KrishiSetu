@@ -20,7 +20,7 @@ export default function DiagnosisScanner() {
       const res = await api.diagnoseImage(selected);
       setResult(res.data);
     } catch (err) {
-      setError('Unable to analyze image. Please try again.');
+      setError('Unable to analyze image. Ensure backend is running.');
     } finally {
       setLoading(false);
     }
@@ -31,7 +31,7 @@ export default function DiagnosisScanner() {
       <CardContent sx={{ p: 4 }}>
         <Typography variant="h5" gutterBottom fontWeight="bold">Crop Disease Scanner</Typography>
         <Typography color="textSecondary" mb={4}>
-          Upload a clear photo of the affected plant leaf for an instant assessment.
+          Upload a clear photo of an affected leaf for automated advisory.
         </Typography>
 
         {!file && (
@@ -57,17 +57,14 @@ export default function DiagnosisScanner() {
             <Alert severity={result.urgency === 'high' ? 'error' : 'info'} sx={{ mb: 2 }}>
               <strong>{result.name}</strong> ({result.confidence}% confidence)
             </Alert>
-            <Typography variant="subtitle1" fontWeight="bold">Treatment:</Typography>
+            <Typography variant="subtitle1" fontWeight="bold">Treatment Recommendation:</Typography>
             <Typography paragraph>{result.treatment}</Typography>
-            <Typography variant="subtitle1" fontWeight="bold">Prevention:</Typography>
+            <Typography variant="subtitle1" fontWeight="bold">Preventive Action:</Typography>
             <Typography paragraph>{result.prevention}</Typography>
             
             <Button variant="outlined" fullWidth onClick={() => { setFile(null); setResult(null); }}>
-              Scan Another Image
+              Scan Another Crop Leaf
             </Button>
-            <Typography variant="caption" color="textSecondary" display="block" sx={{ mt: 2, textAlign: 'center' }}>
-              Disclaimer: AI diagnosis is advisory. Consult a local agronomist for severe cases.
-            </Typography>
           </div>
         )}
       </CardContent>

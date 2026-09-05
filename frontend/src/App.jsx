@@ -6,33 +6,32 @@ import DiagnosisScanner from './components/DiagnosisScanner';
 import AdminDrawer from './components/AdminDrawer';
 
 export default function App() {
-  const [currentView, setCurrentView] = useState('dashboard'); // 'dashboard' or 'diagnosis'
+  const [currentView, setCurrentView] = useState('dashboard');
   const [adminOpen, setAdminOpen] = useState(false);
 
   return (
-    <Box sx={{ flexGrow: 1, minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-      {/* Top Navigation */}
-      <AppBar position="static" elevation={1}>
+    <Box sx={{ flexGrow: 1, minHeight: '100vh', display: 'flex', flexDirection: 'column', bgcolor: '#f9fbe7' }}>
+      <AppBar position="static" elevation={1} sx={{ bgcolor: '#2e7d32' }}>
         <Toolbar>
-          <Sprout size={32} style={{ marginRight: '12px', color: '#fff' }} />
-          <Typography variant="h5" component="div" sx={{ flexGrow: 1, fontWeight: 'bold' }}>
+          <Sprout size={30} style={{ marginRight: '12px' }} />
+          <Typography variant="h6" component="div" sx={{ flexGrow: 1, fontWeight: 'bold' }}>
             KrishiSetu
           </Typography>
           
           <Button 
             color="inherit" 
-            startIcon={<Activity size={20} />}
+            startIcon={<Activity size={18} />}
             onClick={() => setCurrentView('dashboard')}
-            sx={{ mr: 2, opacity: currentView === 'dashboard' ? 1 : 0.7 }}
+            sx={{ mr: 1, opacity: currentView === 'dashboard' ? 1 : 0.7 }}
           >
             Dashboard
           </Button>
           
           <Button 
             color="inherit" 
-            startIcon={<Camera size={20} />}
+            startIcon={<Camera size={18} />}
             onClick={() => setCurrentView('diagnosis')}
-            sx={{ mr: 2, opacity: currentView === 'diagnosis' ? 1 : 0.7 }}
+            sx={{ mr: 1, opacity: currentView === 'diagnosis' ? 1 : 0.7 }}
           >
             Scan Crop
           </Button>
@@ -43,12 +42,10 @@ export default function App() {
         </Toolbar>
       </AppBar>
 
-      {/* Main Content Area */}
       <Container maxWidth="lg" sx={{ mt: 4, mb: 4, flexGrow: 1 }}>
         {currentView === 'dashboard' ? <TelemetryDashboard /> : <DiagnosisScanner />}
       </Container>
 
-      {/* Admin / Demo Control Drawer */}
       <AdminDrawer open={adminOpen} onClose={() => setAdminOpen(false)} />
     </Box>
   );
