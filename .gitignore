@@ -41,3 +41,5 @@ soybean_dataset/
 .idea/
 .DS_Store
 Thumbs.db
+
+database.sqlite3
