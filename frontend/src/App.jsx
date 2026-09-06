@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { AppBar, Toolbar, Typography, Button, Container, Box, IconButton } from '@mui/material';
 import { Sprout, Settings, Activity, Camera } from 'lucide-react';
 import TelemetryDashboard from './components/TelemetryDashboard';
 import DiagnosisScanner from './components/DiagnosisScanner';
@@ -10,43 +9,60 @@ export default function App() {
   const [adminOpen, setAdminOpen] = useState(false);
 
   return (
-    <Box sx={{ flexGrow: 1, minHeight: '100vh', display: 'flex', flexDirection: 'column', bgcolor: '#f9fbe7' }}>
-      <AppBar position="static" elevation={1} sx={{ bgcolor: '#2e7d32' }}>
-        <Toolbar>
-          <Sprout size={30} style={{ marginRight: '12px' }} />
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1, fontWeight: 'bold' }}>
-            KrishiSetu
-          </Typography>
-          
-          <Button 
-            color="inherit" 
-            startIcon={<Activity size={18} />}
-            onClick={() => setCurrentView('dashboard')}
-            sx={{ mr: 1, opacity: currentView === 'dashboard' ? 1 : 0.7 }}
-          >
-            Dashboard
-          </Button>
-          
-          <Button 
-            color="inherit" 
-            startIcon={<Camera size={18} />}
-            onClick={() => setCurrentView('diagnosis')}
-            sx={{ mr: 1, opacity: currentView === 'diagnosis' ? 1 : 0.7 }}
-          >
-            Scan Crop
-          </Button>
+    <div className="min-h-screen flex flex-col bg-husk-cream text-soil-ink font-sans">
+      <nav className="bg-soil-ink text-husk-cream sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between h-14">
+            <div className="flex items-center space-x-8">
+              <div className="flex items-center space-x-2 font-display font-semibold text-lg">
+                <Sprout size={24} className="text-leaf-green" />
+                <span>KrishiSetu</span>
+              </div>
+              
+              <div className="flex space-x-6 h-full">
+                <button
+                  onClick={() => setCurrentView('dashboard')}
+                  className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium transition-colors ${
+                    currentView === 'dashboard'
+                      ? 'border-wheat-gold text-husk-cream'
+                      : 'border-transparent text-husk-cream/60 hover:text-husk-cream hover:border-husk-cream/30'
+                  }`}
+                >
+                  <Activity size={16} className="mr-2" />
+                  Dashboard
+                </button>
+                <button
+                  onClick={() => setCurrentView('diagnosis')}
+                  className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium transition-colors ${
+                    currentView === 'diagnosis'
+                      ? 'border-wheat-gold text-husk-cream'
+                      : 'border-transparent text-husk-cream/60 hover:text-husk-cream hover:border-husk-cream/30'
+                  }`}
+                >
+                  <Camera size={16} className="mr-2" />
+                  Scan Crop
+                </button>
+              </div>
+            </div>
 
-          <IconButton color="inherit" onClick={() => setAdminOpen(true)}>
-            <Settings />
-          </IconButton>
-        </Toolbar>
-      </AppBar>
+            <div className="flex items-center">
+              <button
+                onClick={() => setAdminOpen(true)}
+                className="p-2 text-husk-cream/60 hover:text-husk-cream hover:bg-husk-cream/5 rounded-full transition-colors"
+                aria-label="Settings"
+              >
+                <Settings size={20} />
+              </button>
+            </div>
+          </div>
+        </div>
+      </nav>
 
-      <Container maxWidth="lg" sx={{ mt: 4, mb: 4, flexGrow: 1 }}>
+      <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {currentView === 'dashboard' ? <TelemetryDashboard /> : <DiagnosisScanner />}
-      </Container>
+      </main>
 
       <AdminDrawer open={adminOpen} onClose={() => setAdminOpen(false)} />
-    </Box>
+    </div>
   );
 }
