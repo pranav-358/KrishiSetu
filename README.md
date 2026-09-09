@@ -117,20 +117,6 @@ Open two terminals — one for backend, one for frontend — then visit `http://
     React Frontend → Image → FastAPI Endpoint → OpenCV Processing
     → TensorFlow Lite → MobileNetV2 → Prediction → JSON Response → Dashboard
 
-## 🤝 Contributing
-
-```bash
-# Fork the repository, then:
-git clone https://github.com/pranav-358/KrishiSetu
-cd KrishiSetu
-git checkout -b feature/your-feature
-
-# Make your changes, then:
-git add .
-git commit -m "Add new feature"
-git push origin feature/your-feature
-```Then open a Pull Request.
-
 
 ### 🌾 KrishiSetu
 > "Connecting Farmers with AI for Smarter, Healthier Crops."
