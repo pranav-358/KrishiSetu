@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, ReferenceLine } from 'recharts';
-import { Sprout, CheckCircle2, AlertTriangle, CloudRain, Thermometer, Droplets, Wind, Search } from 'lucide-react';
+import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
+import { Thermometer, Droplets, Wind, Search } from 'lucide-react';
 import { api } from '../services/api';
 
 const CircularGaugeCard = ({ value, min = 0, max = 100, label, unit, colorClass, Icon }) => {
@@ -10,30 +10,35 @@ const CircularGaugeCard = ({ value, min = 0, max = 100, label, unit, colorClass,
   const strokeDashoffset = circumference - (percentage * circumference);
 
   return (
-    <div className="flex items-center justify-center gap-8 p-6 bg-white/70 backdrop-blur-2xl border border-soil-ink/10 rounded-3xl shadow-[0_8px_32px_rgba(43,36,25,0.05)] transition-all duration-300 hover:bg-white group">
+    <div className="flex flex-row items-center justify-between sm:justify-center gap-4 sm:gap-6 lg:gap-8 p-5 sm:p-6 bg-white/70 backdrop-blur-2xl border border-soil-ink/10 rounded-3xl shadow-[0_8px_32px_rgba(43,36,25,0.05)] transition-all duration-300 hover:bg-white group">
       {/* Left side: Circular Gauge */}
-      <div className="relative flex items-center justify-center">
-        <svg className="transform -rotate-90 w-[120px] h-[120px]">
-          <circle cx="60" cy="60" r={radius} stroke="currentColor" strokeWidth="8" fill="transparent" className="text-soil-ink/5" />
-          <circle cx="60" cy="60" r={radius} stroke="currentColor" strokeWidth="8" fill="transparent" 
-            strokeDasharray={circumference} 
-            strokeDashoffset={strokeDashoffset} 
-            className={`${colorClass} transition-all duration-1000 ease-out`} 
-            strokeLinecap="round" 
-            style={{ filter: 'drop-shadow(0 0 4px currentColor)' }}
-          />
+      <div className="relative flex items-center justify-center shrink-0">
+        <svg className="transform -rotate-90 w-[100px] h-[100px] sm:w-[120px] sm:h-[120px]">
+          {/* Responsive circle sizing via viewBox trick or scaling. For fixed radius, SVG scales based on CSS width/height if viewBox is set. Let's add viewBox to make it truly fluid inside its container. */}
+          <svg viewBox="0 0 120 120" className="w-full h-full overflow-visible">
+            <circle cx="60" cy="60" r={radius} stroke="currentColor" strokeWidth="8" fill="transparent" className="text-soil-ink/5" />
+            <circle cx="60" cy="60" r={radius} stroke="currentColor" strokeWidth="8" fill="transparent" 
+              strokeDasharray={circumference} 
+              strokeDashoffset={strokeDashoffset} 
+              className={`${colorClass} transition-all duration-1000 ease-out`} 
+              strokeLinecap="round" 
+              style={{ filter: 'drop-shadow(0 0 4px currentColor)' }}
+            />
+          </svg>
         </svg>
         <div className="absolute inset-0 flex items-center justify-center">
-          <span className="text-2xl font-display font-bold tabular-nums text-soil-ink">{value.toFixed(1)}{unit}</span>
+          <span className="text-xl sm:text-2xl font-display font-bold tabular-nums text-soil-ink">
+            {value.toFixed(1)}<span className="text-sm sm:text-base">{unit}</span>
+          </span>
         </div>
       </div>
       
       {/* Right side: Icon and Label */}
-      <div className="flex flex-col items-center justify-center">
-        <div className={`w-14 h-14 rounded-full border border-soil-ink/10 flex items-center justify-center mb-2 bg-white shadow-sm group-hover:scale-105 transition-transform duration-300`}>
-          <Icon size={24} className={colorClass} />
+      <div className="flex flex-col items-end sm:items-center justify-center">
+        <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full border border-soil-ink/10 flex items-center justify-center mb-1 sm:mb-2 bg-white shadow-sm group-hover:scale-105 transition-transform duration-300">
+          <Icon size={20} className={`sm:w-6 sm:h-6 ${colorClass}`} />
         </div>
-        <h3 className="font-sans text-sm font-medium text-soil-ink/80 text-center leading-tight">
+        <h3 className="font-sans text-xs sm:text-sm font-medium text-soil-ink/80 text-right sm:text-center leading-tight">
           {label.split(' ').map((word, i) => (
             <span key={i} className="block">{word}</span>
           ))}
@@ -70,45 +75,45 @@ export default function TelemetryDashboard() {
   }, []);
 
   if (!current) return (
-    <div className="flex items-center justify-center h-full">
+    <div className="flex items-center justify-center h-full min-h-[50vh]">
       <div className="w-8 h-8 border-4 border-soil-ink/10 border-t-well-water-blue rounded-full animate-spin"></div>
     </div>
   );
 
   return (
-    <div className="h-full flex flex-col space-y-8 animate-in fade-in duration-700 pb-24">
+    <div className="w-full h-full flex flex-col space-y-6 sm:space-y-8 animate-in fade-in duration-700 pb-28 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-8 max-w-7xl mx-auto">
       
       {/* 1. Header Area */}
-      <header className="flex flex-col md:flex-row md:items-start justify-between gap-6">
+      <header className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 sm:gap-6">
         <div>
-          <h1 className="font-display text-4xl sm:text-5xl text-soil-ink font-bold">Field Overview</h1>
-          <p className="font-sans text-soil-ink/60 mt-2 text-sm">Updated just now</p>
+          <h1 className="font-display text-3xl sm:text-4xl md:text-5xl text-soil-ink font-bold leading-tight">Field Overview</h1>
+          <p className="font-sans text-soil-ink/60 mt-1 sm:mt-2 text-xs sm:text-sm">Updated just now</p>
         </div>
         
-        {/* Premium Status Chip Top Right */}
-        <div className="inline-flex items-center space-x-3 px-5 py-2.5 bg-white backdrop-blur-md border border-soil-ink/10 rounded-full shadow-sm">
+        {/* Premium Status Chip */}
+        <div className="self-start sm:self-auto inline-flex items-center space-x-2 sm:space-x-3 px-4 sm:px-5 py-2 sm:py-2.5 bg-white backdrop-blur-md border border-soil-ink/10 rounded-full shadow-sm">
           <div className="relative flex items-center justify-center">
-            <div className="absolute w-3 h-3 bg-leaf-green rounded-full animate-ping opacity-75"></div>
-            <div className="relative w-2 h-2 bg-leaf-green rounded-full shadow-[0_0_8px_#3F6B4A]"></div>
+            <div className="absolute w-2.5 h-2.5 sm:w-3 sm:h-3 bg-leaf-green rounded-full animate-ping opacity-75"></div>
+            <div className="relative w-1.5 h-1.5 sm:w-2 sm:h-2 bg-leaf-green rounded-full shadow-[0_0_8px_#3F6B4A]"></div>
           </div>
-          <span className="font-sans font-bold text-xs uppercase tracking-widest text-soil-ink">Sector Alpha &middot; Wheat</span>
+          <span className="font-sans font-bold text-[10px] sm:text-xs uppercase tracking-widest text-soil-ink">Sector Alpha &middot; Wheat</span>
         </div>
       </header>
 
       {/* 2. Glassmorphism Metric Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
         <CircularGaugeCard value={current.moisture_pct} min={0} max={100} label="Soil Moisture" unit="%" colorClass="text-well-water-blue" Icon={Droplets} />
         <CircularGaugeCard value={current.temperature} min={10} max={50} label="Temperature" unit="°C" colorClass="text-sindoor-rust" Icon={Thermometer} />
         <CircularGaugeCard value={current.humidity} min={0} max={100} label="Humidity" unit="%" colorClass="text-leaf-green" Icon={Wind} />
       </div>
 
       {/* 3. Trends Area Chart */}
-      <div className="flex-1 min-h-[400px] bg-white/70 backdrop-blur-2xl border border-soil-ink/10 rounded-3xl p-6 sm:p-8 flex flex-col shadow-[0_8px_32px_rgba(43,36,25,0.05)]">
-        <h2 className="font-sans font-bold text-lg text-soil-ink mb-6">24-Hour Trends</h2>
+      <div className="flex-1 min-h-[300px] sm:min-h-[400px] bg-white/70 backdrop-blur-2xl border border-soil-ink/10 rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-8 flex flex-col shadow-[0_8px_32px_rgba(43,36,25,0.05)]">
+        <h2 className="font-sans font-bold text-base sm:text-lg text-soil-ink mb-4 sm:mb-6">24-Hour Trends</h2>
         
-        <div className="flex-1 w-full font-sans text-sm tabular-nums">
+        <div className="flex-1 w-full font-sans text-xs sm:text-sm tabular-nums min-h-[200px]">
           <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={history} margin={{ top: 10, right: 20, left: -20, bottom: 10 }}>
+            <AreaChart data={history} margin={{ top: 10, right: 10, left: -25, bottom: 0 }}>
               <defs>
                 <linearGradient id="moistureGradient" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="5%" stopColor="#3E6E8E" stopOpacity={0.2} />
@@ -119,32 +124,36 @@ export default function TelemetryDashboard() {
                 dataKey="time" 
                 axisLine={false} 
                 tickLine={false} 
-                tick={{ fill: '#2B2419', opacity: 0.6, fontSize: 12 }} 
+                tick={{ fill: '#2B2419', opacity: 0.6, fontSize: 11 }} 
                 dy={10} 
-                minTickGap={60}
+                minTickGap={40}
               />
-              <YAxis axisLine={false} tickLine={false} tick={{ fill: '#2B2419', opacity: 0.6, fontSize: 12 }} />
+              <YAxis 
+                axisLine={false} 
+                tickLine={false} 
+                tick={{ fill: '#2B2419', opacity: 0.6, fontSize: 11 }} 
+              />
               
               <Tooltip
-                contentStyle={{ backgroundColor: 'rgba(255,255,255,0.95)', backdropFilter: 'blur(10px)', color: '#2B2419', border: '1px solid rgba(43,36,25,0.1)', borderRadius: '12px', boxShadow: '0 10px 25px rgba(43,36,25,0.1)' }}
+                contentStyle={{ backgroundColor: 'rgba(255,255,255,0.95)', backdropFilter: 'blur(10px)', color: '#2B2419', border: '1px solid rgba(43,36,25,0.1)', borderRadius: '12px', boxShadow: '0 10px 25px rgba(43,36,25,0.1)', fontSize: '12px' }}
                 itemStyle={{ color: '#2B2419' }}
-                labelStyle={{ color: '#E8B84B', marginBottom: '8px', fontWeight: 'bold' }}
+                labelStyle={{ color: '#E8B84B', marginBottom: '6px', fontWeight: 'bold' }}
               />
               
-              <Area type="monotone" dataKey="moisture_pct" name="Moisture (%)" stroke="#3E6E8E" strokeWidth={3} fillOpacity={1} fill="url(#moistureGradient)" style={{ filter: 'drop-shadow(0 4px 6px rgba(62,110,142,0.2))' }} />
+              <Area type="monotone" dataKey="moisture_pct" name="Moisture (%)" stroke="#3E6E8E" strokeWidth={2.5} fillOpacity={1} fill="url(#moistureGradient)" style={{ filter: 'drop-shadow(0 4px 6px rgba(62,110,142,0.2))' }} />
             </AreaChart>
           </ResponsiveContainer>
         </div>
       </div>
 
       {/* 4. Floating Bottom Dock */}
-      <div className="fixed bottom-6 left-0 right-0 flex justify-center pointer-events-none z-50">
-        <div className="bg-white/80 backdrop-blur-3xl border border-soil-ink/10 shadow-[0_10px_40px_rgba(43,36,25,0.15)] rounded-full px-6 py-3 flex items-center justify-between pointer-events-auto min-w-[300px]">
+      <div className="fixed bottom-4 sm:bottom-6 left-0 right-0 flex justify-center pointer-events-none z-50">
+        <div className="bg-white/90 backdrop-blur-3xl border border-soil-ink/10 shadow-[0_10px_40px_rgba(43,36,25,0.15)] rounded-full px-5 sm:px-6 py-2.5 sm:py-3 flex items-center justify-between pointer-events-auto w-[90%] max-w-[320px] sm:max-w-[350px]">
           <button className="text-soil-ink/70 hover:text-soil-ink transition-colors">
-            <Search size={20} />
+            <Search size={18} className="sm:w-5 sm:h-5" />
           </button>
           
-          <div className="flex items-center space-x-3 text-xs font-mono font-medium text-soil-ink/80 ml-8">
+          <div className="flex items-center space-x-2 sm:space-x-3 text-[10px] sm:text-xs font-mono font-medium text-soil-ink/80 ml-4 sm:ml-8">
             <span>ENG | IN</span>
             <span className="w-1 h-1 rounded-full bg-soil-ink/20"></span>
             <span>17:44</span>
