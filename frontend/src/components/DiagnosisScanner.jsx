@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Camera, CheckCircle, AlertTriangle, Settings, Sprout, Leaf, UploadCloud } from 'lucide-react';
+import { Camera, CheckCircle, AlertTriangle, Sprout, Leaf, UploadCloud } from 'lucide-react';
 import { api } from '../services/api';
 
 export default function DiagnosisScanner() {
@@ -41,8 +41,6 @@ export default function DiagnosisScanner() {
   };
 
   const handleChipClick = (crop) => {
-    // In a real app, this might load a sample image.
-    // For now, just trigger a simulated analysis.
     console.log("Selected sample:", crop);
   };
 
@@ -69,7 +67,7 @@ export default function DiagnosisScanner() {
         }
       `}} />
 
-      <div className="w-full max-w-3xl z-10 pt-4">
+      <div className="w-full max-w-4xl z-10 pt-4">
         
         {/* Upload Box - Light & Airy Design */}
         <div className="bg-white/80 backdrop-blur-xl border border-white rounded-[2.5rem] p-2 shadow-[0_20px_60px_rgba(43,36,25,0.05)]">
@@ -85,11 +83,8 @@ export default function DiagnosisScanner() {
                   : 'border-soil-ink/15 hover:border-well-water-blue/40 hover:bg-gradient-to-b hover:from-transparent hover:to-well-water-blue/5'
               }`}
             >
-              {/* SVG Leaf Illustration & Scan Line */}
               <div className="relative w-36 h-36 mb-8 flex justify-center animate-float-leaf">
                 <Leaf className={`w-full h-full text-leaf-green transition-opacity duration-300 ${isDragging ? 'opacity-100 drop-shadow-lg' : 'opacity-80'}`} strokeWidth={1} />
-                
-                {/* Glowing Scan Line */}
                 <div className="absolute top-0 left-0 right-0 h-[3px] bg-well-water-blue rounded-full shadow-[0_0_20px_#2196F3] animate-scan-line"></div>
               </div>
               
@@ -100,7 +95,6 @@ export default function DiagnosisScanner() {
                 Drag and drop a photo of the affected leaf, or click below. Our AI will instantly identify diseases and recommend treatments.
               </p>
               
-              {/* Action Button */}
               <div className="relative inline-flex items-center justify-center">
                 <div className="relative inline-flex items-center space-x-3 px-10 py-4 bg-leaf-green text-white font-bold rounded-full shadow-[0_8px_20px_rgba(76,175,80,0.25)] hover:shadow-[0_12px_25px_rgba(76,175,80,0.35)] hover:-translate-y-1 hover:bg-[#43A047] transition-all duration-300">
                   <Camera size={22} />
@@ -110,7 +104,6 @@ export default function DiagnosisScanner() {
               
               <input type="file" className="hidden" accept="image/jpeg, image/png" onChange={handleUpload} />
 
-              {/* Sample Crop Chips (Color Mapping) */}
               <div className="mt-14 flex space-x-4">
                 <button onClick={(e) => { e.preventDefault(); handleChipClick('Wheat Rust'); }} className="flex items-center space-x-2 px-5 py-2 rounded-full bg-white text-sindoor-rust text-sm font-sans font-semibold hover:bg-sindoor-rust/10 transition-all border border-sindoor-rust/20 shadow-sm hover:shadow">
                   <span>🌾</span><span>Wheat Rust</span>
@@ -125,7 +118,6 @@ export default function DiagnosisScanner() {
             </label>
           )}
 
-          {/* Loading & Result States within the Glassmorphism Card */}
           {loading && (
             <div className="flex flex-col items-center justify-center py-32 rounded-[2.25rem]">
               <div className="relative w-20 h-20 mb-8">
@@ -150,8 +142,9 @@ export default function DiagnosisScanner() {
           {result && !loading && !error && (
             <div className="p-8 animate-in zoom-in-95 duration-500 rounded-[2.25rem]">
               <div className="flex flex-col md:flex-row gap-8">
+                
                 {/* Image Preview */}
-                <div className="w-full md:w-1/3 relative rounded-3xl overflow-hidden border border-soil-ink/10 shadow-[0_10px_30px_rgba(33,150,243,0.15)]">
+                <div className="w-full md:w-1/3 relative rounded-3xl overflow-hidden border border-soil-ink/10 shadow-[0_10px_30px_rgba(33,150,243,0.15)] h-[350px]">
                   <img src={file} alt="Analyzed Crop" className="w-full h-full object-cover" />
                   <div className="absolute inset-0 bg-gradient-to-t from-soil-ink/70 via-soil-ink/20 to-transparent"></div>
                   <div className="absolute bottom-5 left-5">
@@ -189,40 +182,58 @@ export default function DiagnosisScanner() {
                     </div>
                   </div>
                   
-                  {/* Treatment and Prevention Cards */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 flex-1">
-                    <div className="bg-gradient-to-b from-well-water-blue/5 to-transparent rounded-3xl p-6 border border-well-water-blue/10 relative overflow-hidden group">
+                  {/* Actionable Cards Grid - Changed to 3 columns on large screens */}
+                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 flex-1">
+                    
+                    {/* Treatment Card */}
+                    <div className="bg-gradient-to-b from-well-water-blue/5 to-transparent rounded-3xl p-5 border border-well-water-blue/10 relative overflow-hidden group">
                       <div className="absolute top-0 right-0 w-32 h-32 bg-well-water-blue/5 rounded-full blur-2xl -mr-10 -mt-10 transition-transform group-hover:scale-150"></div>
-                      <h4 className="font-sans font-bold text-soil-ink mb-4 flex items-center text-lg relative z-10">
-                        <div className="p-2 bg-white rounded-xl shadow-sm mr-3">
-                          <Leaf size={20} className="text-well-water-blue" />
+                      <h4 className="font-sans font-bold text-soil-ink mb-3 flex items-center text-md relative z-10">
+                        <div className="p-1.5 bg-white rounded-xl shadow-sm mr-2.5">
+                          <Leaf size={18} className="text-well-water-blue" />
                         </div>
                         Treatment
                       </h4>
-                      <p className="text-soil-ink/80 font-sans text-sm leading-relaxed relative z-10">
+                      <p className="text-soil-ink/80 font-sans text-xs leading-relaxed relative z-10">
                         {result.treatment}
                       </p>
                     </div>
                     
-                    <div className="bg-gradient-to-b from-leaf-green/5 to-transparent rounded-3xl p-6 border border-leaf-green/10 relative overflow-hidden group">
+                    {/* Prevention Card */}
+                    <div className="bg-gradient-to-b from-leaf-green/5 to-transparent rounded-3xl p-5 border border-leaf-green/10 relative overflow-hidden group">
                       <div className="absolute top-0 right-0 w-32 h-32 bg-leaf-green/5 rounded-full blur-2xl -mr-10 -mt-10 transition-transform group-hover:scale-150"></div>
-                      <h4 className="font-sans font-bold text-soil-ink mb-4 flex items-center text-lg relative z-10">
-                        <div className="p-2 bg-white rounded-xl shadow-sm mr-3">
-                          <CheckCircle size={20} className="text-leaf-green" />
+                      <h4 className="font-sans font-bold text-soil-ink mb-3 flex items-center text-md relative z-10">
+                        <div className="p-1.5 bg-white rounded-xl shadow-sm mr-2.5">
+                          <CheckCircle size={18} className="text-leaf-green" />
                         </div>
                         Prevention
                       </h4>
-                      <p className="text-soil-ink/80 font-sans text-sm leading-relaxed relative z-10">
+                      <p className="text-soil-ink/80 font-sans text-xs leading-relaxed relative z-10">
                         {result.prevention}
                       </p>
                     </div>
+
+                    {/* NEW: Fertilizer Card */}
+                    <div className="bg-gradient-to-b from-amber-500/5 to-transparent rounded-3xl p-5 border border-amber-500/10 relative overflow-hidden group">
+                      <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/5 rounded-full blur-2xl -mr-10 -mt-10 transition-transform group-hover:scale-150"></div>
+                      <h4 className="font-sans font-bold text-soil-ink mb-3 flex items-center text-md relative z-10">
+                        <div className="p-1.5 bg-white rounded-xl shadow-sm mr-2.5">
+                          <Sprout size={18} className="text-amber-600" />
+                        </div>
+                        Fertilizer
+                      </h4>
+                      <p className="text-soil-ink/80 font-sans text-xs leading-relaxed relative z-10">
+                        {result.fertilizer || "Maintain standard NPK balanced fertilizer for optimal soil health."}
+                      </p>
+                    </div>
+
                   </div>
                   
                   {/* Scan Another Button */}
-                  <div className="mt-10 flex justify-end">
+                  <div className="mt-8 flex justify-end">
                     <button 
                       onClick={() => { setFile(null); setResult(null); setError(''); }}
-                      className="group relative inline-flex items-center space-x-3 bg-soil-ink text-husk-cream px-8 py-4 rounded-full font-bold shadow-[0_8px_20px_rgba(43,36,25,0.2)] hover:shadow-[0_12px_25px_rgba(43,36,25,0.3)] hover:-translate-y-1 transition-all duration-300 overflow-hidden"
+                      className="group relative inline-flex items-center space-x-3 bg-soil-ink text-husk-cream px-8 py-3.5 rounded-full font-bold shadow-[0_8px_20px_rgba(43,36,25,0.2)] hover:shadow-[0_12px_25px_rgba(43,36,25,0.3)] hover:-translate-y-1 transition-all duration-300 overflow-hidden"
                     >
                       <div className="absolute inset-0 bg-white/10 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out"></div>
                       <span className="relative z-10">Scan another leaf</span>
