@@ -18,3 +18,4 @@ export const api = {
   },
   getAIAdvice: (data) => axios.post(`${API_BASE}/advice`, data)
 };
+

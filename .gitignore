@@ -43,3 +43,5 @@ soybean_dataset/
 Thumbs.db
 
 database.sqlite3
+
+backend/.env

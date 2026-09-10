@@ -2,6 +2,8 @@ from datetime import datetime
 from sqlalchemy import Column, Integer, Float, String, DateTime, create_engine
 from sqlalchemy.orm import declarative_base, sessionmaker
 from pydantic import BaseModel
+from pydantic import BaseModel
+from typing import Optional
 
 Base = declarative_base()
 engine = create_engine("sqlite:///../database.sqlite3", connect_args={"check_same_thread": False})
@@ -44,3 +46,12 @@ class AdviceRequest(BaseModel):
 
 class AdviceResponse(BaseModel):
     advice: str
+
+
+
+# (Keep whatever existing classes you have here)
+
+class AdvisoryRequest(BaseModel):
+    crop_type: str
+    land_size: str
+    disease: Optional[str] = ""

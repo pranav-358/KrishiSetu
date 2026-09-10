@@ -2,6 +2,9 @@ import os
 import asyncio
 import random
 import math
+from dotenv import load_dotenv
+from google import genai
+from app.models import AdvisoryRequest
 from datetime import datetime, timedelta
 from fastapi import FastAPI, Depends, UploadFile, File, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -10,6 +13,11 @@ from .models import SessionLocal, SensorLog, AdvisoryAlert, ControlState, Advice
 from .agronomy import evaluate_conditions
 from .diagnosis import process_and_diagnose
 from .advisory_llm import generate_agronomy_advice
+
+load_dotenv()
+
+# Safely grab the key from the .env file
+client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
 
 app = FastAPI(title="KrishiSetu API")
 
@@ -105,26 +113,7 @@ def update_controls(state: ControlState):
 def get_controls():
     return demo_state
 
-@app.post("/api/advice", response_model=AdviceResponse)
-def get_agronomy_advice(request: AdviceRequest, db: Session = Depends(get_db)):
-    latest_telemetry = db.query(SensorLog).order_by(SensorLog.timestamp.desc()).first()
-    
-    if latest_telemetry:
-        telemetry_data = {
-            "temperature": latest_telemetry.temperature,
-            "humidity": latest_telemetry.humidity,
-            "moisture": latest_telemetry.moisture_pct
-        }
-    else:
-        telemetry_data = {}
 
-    advice = generate_agronomy_advice(
-        crop_type=request.crop_type,
-        land_size=request.land_size,
-        disease=request.disease,
-        telemetry=telemetry_data
-    )
-    return {"advice": advice}
 
 @app.post("/api/diagnose")
 async def diagnose_image(file: UploadFile = File(...)):
@@ -152,4 +141,50 @@ async def diagnose_image(file: UploadFile = File(...)):
 
         return result
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/api/advice")
+async def generate_ai_advisory(request: AdvisoryRequest):
+    try:
+        # Construct the engineered prompt
+        prompt = f"""
+        You are an expert Indian Agronomist and Smart Farming Assistant. 
+        A farmer needs immediate advice for the following field:
+        - Crop Type: {request.crop_type}
+        - Land Size: {request.land_size}
+        - Current Disease/Issue: {request.disease if request.disease else "None currently observed"}
+
+        Provide a highly accurate, actionable agronomy advisory plan. 
+        Format the response strictly in Markdown with these sections:
+        
+        ### 🧪 Recommended Chemical & Organic Dosage
+        - (Provide exact measurements per acre/hectare for {request.land_size})
+        
+        ### 💧 Smart Irrigation Schedule
+        - (Provide specific watering advice for this crop type)
+        
+        ### 🛡️ Preventative Care & Next Steps
+        - (Provide actionable steps to prevent further spread or issues)
+
+        Keep the tone professional, concise, and highly specific. Do not use generic greetings.
+        """
+
+        # Generate the response
+        response = client.models.generate_content(
+            model='gemini-3.6-flash', # <--- CHANGE THIS LINE!
+            contents=prompt
+        )
+        
+        # --- THE FIX: Handle Safety Filter Blocks and None values ---
+        advice_text = response.text
+        
+        if not advice_text:
+            advice_text = "⚠️ The AI blocked the response. This usually happens when agricultural chemical names accidentally trigger the AI's safety filters. Please try rewording the disease name."
+            
+        # Return it to the React frontend, forcing it to be a string
+        return {"advice": str(advice_text)}
+
+    except Exception as e:
+        print(f"GenAI Error: {e}")
+        return {"advice": "⚠️ Error: Unable to reach the AI Agronomy model. Please try again."}
