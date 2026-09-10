@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
-import { Thermometer, Droplets, Wind, Search } from 'lucide-react';
+import { Thermometer, Droplets, Wind, Search, Activity } from 'lucide-react';
 import { api } from '../services/api';
+import RiskForecastCard from './RiskForecastCard';
 
 const CircularGaugeCard = ({ value, min = 0, max = 100, label, unit, colorClass, Icon }) => {
   const radius = 52;
@@ -48,7 +49,7 @@ const CircularGaugeCard = ({ value, min = 0, max = 100, label, unit, colorClass,
   );
 };
 
-export default function TelemetryDashboard() {
+export default function TelemetryDashboard({ isOffline, language = 'en' }) {
   const [current, setCurrent] = useState(null);
   const [history, setHistory] = useState([]);
 
@@ -69,10 +70,16 @@ export default function TelemetryDashboard() {
       }
     };
     
-    fetchTelemetry();
-    const interval = setInterval(fetchTelemetry, 5000);
-    return () => clearInterval(interval);
-  }, []);
+    if (!isOffline) {
+      fetchTelemetry();
+      const interval = setInterval(fetchTelemetry, 5000);
+      return () => clearInterval(interval);
+    } else {
+      // Simulate cached data if offline
+      setCurrent({ moisture_pct: 42.5, temperature: 31.2, humidity: 55.4 });
+      setHistory(Array.from({length: 24}).map((_, i) => ({ time: `${i}:00`, moisture_pct: 40 + Math.random() * 10 })));
+    }
+  }, [isOffline]);
 
   if (!current) return (
     <div className="flex items-center justify-center h-full min-h-[50vh]">
@@ -86,8 +93,19 @@ export default function TelemetryDashboard() {
       {/* 1. Header Area */}
       <header className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 sm:gap-6">
         <div>
-          <h1 className="font-display text-3xl sm:text-4xl md:text-5xl text-soil-ink font-bold leading-tight">Field Overview</h1>
-          <p className="font-sans text-soil-ink/60 mt-1 sm:mt-2 text-xs sm:text-sm">Updated just now</p>
+          <h1 className="font-serif text-3xl sm:text-4xl text-soil-ink font-semibold leading-tight tracking-tight">Field Overview</h1>
+          <div className="flex items-center space-x-2 mt-3 sm:mt-4">
+            <p className="font-sans text-soil-ink/60 text-xs sm:text-sm">Updated just now</p>
+            {isOffline && (
+              <>
+                <span className="text-soil-ink/30">•</span>
+                <p className="font-sans text-amber-600/80 font-medium text-xs sm:text-sm flex items-center">
+                  <Activity size={12} className="mr-1" />
+                  {language === 'hi' ? 'आखिरी बार 4 घंटे पहले सिंक हुआ' : 'Last synced 4 hours ago'}
+                </p>
+              </>
+            )}
+          </div>
         </div>
         
         {/* Premium Status Chip */}
@@ -100,18 +118,22 @@ export default function TelemetryDashboard() {
         </div>
       </header>
 
+      {/* Priority Risk Forecast */}
+      <RiskForecastCard type="heat" language={language} />
+
       {/* 2. Glassmorphism Metric Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
         <CircularGaugeCard value={current.moisture_pct} min={0} max={100} label="Soil Moisture" unit="%" colorClass="text-well-water-blue" Icon={Droplets} />
         <CircularGaugeCard value={current.temperature} min={10} max={50} label="Temperature" unit="°C" colorClass="text-sindoor-rust" Icon={Thermometer} />
         <CircularGaugeCard value={current.humidity} min={0} max={100} label="Humidity" unit="%" colorClass="text-leaf-green" Icon={Wind} />
+        <CircularGaugeCard value={6.5} min={0} max={14} label="Soil pH" unit="" colorClass="text-leaf-green" Icon={Activity} />
       </div>
 
       {/* 3. Trends Area Chart */}
-      <div className="flex-1 min-h-[300px] sm:min-h-[400px] bg-white/70 backdrop-blur-2xl border border-soil-ink/10 rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-8 flex flex-col shadow-[0_8px_32px_rgba(43,36,25,0.05)]">
+      <div className="bg-white/70 backdrop-blur-2xl border border-soil-ink/10 rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-8 flex flex-col shadow-[0_8px_32px_rgba(43,36,25,0.05)]">
         <h2 className="font-sans font-bold text-base sm:text-lg text-soil-ink mb-4 sm:mb-6">24-Hour Trends</h2>
         
-        <div className="flex-1 w-full font-sans text-xs sm:text-sm tabular-nums min-h-[200px]">
+        <div className="w-full h-64 sm:h-[350px] font-sans text-xs sm:text-sm tabular-nums">
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart data={history} margin={{ top: 10, right: 10, left: -25, bottom: 0 }}>
               <defs>
@@ -146,22 +168,7 @@ export default function TelemetryDashboard() {
         </div>
       </div>
 
-      {/* 4. Floating Bottom Dock */}
-      <div className="fixed bottom-4 sm:bottom-6 left-0 right-0 flex justify-center pointer-events-none z-50">
-        <div className="bg-white/90 backdrop-blur-3xl border border-soil-ink/10 shadow-[0_10px_40px_rgba(43,36,25,0.15)] rounded-full px-5 sm:px-6 py-2.5 sm:py-3 flex items-center justify-between pointer-events-auto w-[90%] max-w-[320px] sm:max-w-[350px]">
-          <button className="text-soil-ink/70 hover:text-soil-ink transition-colors">
-            <Search size={18} className="sm:w-5 sm:h-5" />
-          </button>
-          
-          <div className="flex items-center space-x-2 sm:space-x-3 text-[10px] sm:text-xs font-mono font-medium text-soil-ink/80 ml-4 sm:ml-8">
-            <span>ENG | IN</span>
-            <span className="w-1 h-1 rounded-full bg-soil-ink/20"></span>
-            <span>17:44</span>
-            <span className="w-1 h-1 rounded-full bg-soil-ink/20"></span>
-            <span>08-09-2026</span>
-          </div>
-        </div>
-      </div>
+
 
     </div>
   );

@@ -36,3 +36,11 @@ class ControlState(BaseModel):
 
 class AlertUpdate(BaseModel):
     status: str
+
+class AdviceRequest(BaseModel):
+    crop_type: str
+    land_size: str
+    disease: str = ""
+
+class AdviceResponse(BaseModel):
+    advice: str

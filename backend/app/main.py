@@ -1,3 +1,4 @@
+import os
 import asyncio
 import random
 import math
@@ -5,9 +6,10 @@ from datetime import datetime, timedelta
 from fastapi import FastAPI, Depends, UploadFile, File, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
-from .models import SessionLocal, SensorLog, AdvisoryAlert, ControlState
+from .models import SessionLocal, SensorLog, AdvisoryAlert, ControlState, AdviceRequest, AdviceResponse
 from .agronomy import evaluate_conditions
 from .diagnosis import process_and_diagnose
+from .advisory_llm import generate_agronomy_advice
 
 app = FastAPI(title="KrishiSetu API")
 
@@ -103,6 +105,27 @@ def update_controls(state: ControlState):
 def get_controls():
     return demo_state
 
+@app.post("/api/advice", response_model=AdviceResponse)
+def get_agronomy_advice(request: AdviceRequest, db: Session = Depends(get_db)):
+    latest_telemetry = db.query(SensorLog).order_by(SensorLog.timestamp.desc()).first()
+    
+    if latest_telemetry:
+        telemetry_data = {
+            "temperature": latest_telemetry.temperature,
+            "humidity": latest_telemetry.humidity,
+            "moisture": latest_telemetry.moisture_pct
+        }
+    else:
+        telemetry_data = {}
+
+    advice = generate_agronomy_advice(
+        crop_type=request.crop_type,
+        land_size=request.land_size,
+        disease=request.disease,
+        telemetry=telemetry_data
+    )
+    return {"advice": advice}
+
 @app.post("/api/diagnose")
 async def diagnose_image(file: UploadFile = File(...)):
     if not file.filename.lower().endswith(('.png', '.jpg', '.jpeg')):
@@ -129,4 +152,4 @@ async def diagnose_image(file: UploadFile = File(...)):
 
         return result
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail=str(e))

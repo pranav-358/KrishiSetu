@@ -15,5 +15,6 @@ export const api = {
     return axios.post(`${API_BASE}/diagnose`, formData, {
       headers: { 'Content-Type': 'multipart/form-data' }
     });
-  }
+  },
+  getAIAdvice: (data) => axios.post(`${API_BASE}/advice`, data)
 };
