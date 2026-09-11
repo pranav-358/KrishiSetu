@@ -1,23 +1,53 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Sprout, ArrowRight, Radio, Bell, Droplets } from 'lucide-react';
 
 export default function LandingPage({ onGetStarted }) {
+  const [activeSection, setActiveSection] = useState('home');
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const sections = ['home', 'how-it-works', 'sensors', 'join-us'];
+      let current = 'home';
+      for (const section of sections) {
+        const element = document.getElementById(section);
+        if (element) {
+          const rect = element.getBoundingClientRect();
+          if (rect.top <= 200) {
+            current = section;
+          }
+        }
+      }
+      setActiveSection(current);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const getNavLinkClass = (section) => {
+    const baseClass = "px-4 py-1.5 rounded-full transition-all duration-300";
+    if (activeSection === section) {
+      return `${baseClass} text-soil-ink bg-wheat-gold/30 hover:scale-105`;
+    }
+    return `${baseClass} hover:text-soil-ink hover:bg-soil-ink/5`;
+  };
+
   return (
-    <div className="min-h-screen bg-husk-cream text-soil-ink font-sans selection:bg-wheat-gold/30">
+    <div id="home" className="min-h-screen bg-husk-cream text-soil-ink font-sans selection:bg-wheat-gold/30">
       
       {/* 1. Floating Nav Pill (Kept the new styling & shadow) */}
       <div className="fixed top-6 left-0 right-0 z-50 flex justify-center px-4">
         <nav className="bg-white/90 backdrop-blur-md shadow-[0_20px_50px_rgba(43,36,25,0.15)] border border-soil-ink/10 rounded-full px-8 py-4 flex items-center justify-between w-full max-w-5xl transition-all duration-500 hover:shadow-[0_25px_60px_rgba(43,36,25,0.2)]">
           <div className="flex items-center space-x-2 font-display font-bold text-xl cursor-pointer" onClick={() => window.scrollTo(0,0)}>
             <Sprout size={28} className="text-leaf-green" />
-            <span className="tracking-tight">KrishiSetu</span>
+            <span className="tracking-tight">AgroEdge</span>
           </div>
           
-          <div className="hidden md:flex items-center space-x-8 font-medium text-sm text-soil-ink/80">
-            <a href="#home" className="text-soil-ink bg-wheat-gold/30 px-4 py-1.5 rounded-full transition-transform hover:scale-105">Home</a>
-            <a href="#how-it-works" className="hover:text-soil-ink transition-colors">How it works</a>
-            <a href="#sensors" className="hover:text-soil-ink transition-colors">Sensors</a>
-            <a href="#pricing" className="hover:text-soil-ink transition-colors">Pricing</a>
+          <div className="hidden md:flex items-center space-x-2 font-medium text-sm text-soil-ink/80">
+            <a href="#home" onClick={() => setActiveSection('home')} className={getNavLinkClass('home')}>Home</a>
+            <a href="#how-it-works" onClick={() => setActiveSection('how-it-works')} className={getNavLinkClass('how-it-works')}>How it works</a>
+            <a href="#sensors" onClick={() => setActiveSection('sensors')} className={getNavLinkClass('sensors')}>Sensors</a>
+            <a href="#join-us" onClick={() => setActiveSection('join-us')} className={getNavLinkClass('join-us')}>Join Us</a>
           </div>
           
           <div className="flex items-center space-x-6">
@@ -50,7 +80,7 @@ export default function LandingPage({ onGetStarted }) {
           
           {/* Subhead */}
           <p className="text-lg sm:text-xl text-soil-ink/70 max-w-2xl mx-auto leading-relaxed">
-            KrishiSetu combines real-time IoT soil sensors with an AI leaf-scanning tool to give Indian farmers precise, actionable irrigation and disease alerts—saving water and protecting yields.
+            AgroEdge combines real-time IoT soil sensors with an AI leaf-scanning tool to give Indian farmers precise, actionable irrigation and disease alerts—saving water and protecting yields.
           </p>
           
           {/* Primary CTA */}
@@ -72,7 +102,7 @@ export default function LandingPage({ onGetStarted }) {
         <section className="relative w-full rounded-3xl overflow-hidden shadow-2xl animate-in fade-in duration-1000 delay-300">
           <img 
             src="/hero-field.png" 
-            alt="Healthy Indian crop field monitored by KrishiSetu" 
+            alt="Healthy Indian crop field monitored by AgroEdge" 
             className="w-full h-[500px] object-cover"
           />
           {/* Gradient Scrim for text readability */}
@@ -93,7 +123,7 @@ export default function LandingPage({ onGetStarted }) {
         </section>
 
         {/* Stats Strip */}
-        <section className="grid grid-cols-2 md:grid-cols-4 gap-8 py-12 border-y border-soil-ink/10">
+        <section id="sensors" className="grid grid-cols-2 md:grid-cols-4 gap-8 py-12 border-y border-soil-ink/10">
           <div className="text-center space-y-2">
             <div className="font-display text-4xl sm:text-5xl font-bold tabular-nums">4,200+</div>
             <div className="font-sans text-soil-ink/70 font-medium">Active sensors deployed</div>
@@ -135,7 +165,7 @@ export default function LandingPage({ onGetStarted }) {
               </div>
               <h3 className="font-display text-2xl font-bold">2. System analyzes risks</h3>
               <p className="font-sans text-soil-ink/70 leading-relaxed">
-                KrishiSetu processes the telemetry against specific crop thresholds. If heat stress or dangerous moisture depletion is detected, the dashboard flags it instantly.
+                AgroEdge processes the telemetry against specific crop thresholds. If heat stress or dangerous moisture depletion is detected, the dashboard flags it instantly.
               </p>
             </div>
             
@@ -154,11 +184,11 @@ export default function LandingPage({ onGetStarted }) {
       </main>
 
       {/* Footer CTA Band */}
-      <footer className="bg-soil-ink text-husk-cream py-24 px-4 text-center mt-12">
+      <footer id="join-us" className="bg-soil-ink text-husk-cream py-24 px-4 text-center mt-12">
         <div className="max-w-3xl mx-auto space-y-8">
           <h2 className="font-display text-4xl sm:text-5xl font-bold">Ready to modernize your farm?</h2>
           <p className="font-sans text-husk-cream/70 text-lg">
-            Join thousands of Indian farmers using KrishiSetu to make confident, data-driven decisions every day.
+            Join thousands of Indian farmers using AgroEdge to make confident, data-driven decisions every day.
           </p>
           <div className="pt-4">
             <button onClick={onGetStarted} className="bg-wheat-gold text-soil-ink px-8 py-4 rounded-full font-medium text-lg hover:bg-wheat-gold/90 transition-colors">

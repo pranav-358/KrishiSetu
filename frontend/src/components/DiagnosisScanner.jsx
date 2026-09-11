@@ -78,7 +78,7 @@ export default function DiagnosisScanner({ onGetTreatment, language = 'en', isOf
         }
       `}} />
 
-      <div className="w-full max-w-5xl z-10 pt-4">
+      <div className="w-full max-w-3xl z-10 pt-4">
         
         {/* Upload Box - Glassmorphism Restored */}
         <div className="bg-white/80 backdrop-blur-xl border border-white rounded-[2rem] sm:rounded-[2.5rem] p-2 shadow-[0_20px_60px_rgba(43,36,25,0.05)]">
@@ -88,7 +88,7 @@ export default function DiagnosisScanner({ onGetTreatment, language = 'en', isOf
               onDragOver={handleDragOver}
               onDragLeave={handleDragLeave}
               onDrop={handleDrop}
-              className={`relative flex flex-col items-center justify-center p-6 sm:p-16 rounded-[1.75rem] sm:rounded-[2.25rem] border-2 border-dashed transition-all duration-500 overflow-hidden min-h-[400px] sm:min-h-[450px] ${
+              className={`relative flex flex-col items-center justify-center p-6 sm:p-12 rounded-[1.75rem] sm:rounded-[2.25rem] border-2 border-dashed transition-all duration-500 overflow-hidden min-h-[350px] sm:min-h-[400px] ${
                 isDragging 
                   ? 'border-well-water-blue bg-well-water-blue/10 scale-[0.99]' 
                   : 'border-soil-ink/15 hover:border-well-water-blue/40 hover:bg-gradient-to-b hover:from-transparent hover:to-well-water-blue/5'
