@@ -28,8 +28,8 @@ const CircularGaugeCard = ({ value, min = 0, max = 100, label, unit, colorClass,
           </svg>
         </svg>
         <div className="absolute inset-0 flex items-center justify-center">
-          <span className="text-xl sm:text-2xl font-display font-bold tabular-nums text-soil-ink">
-            {value.toFixed(1)}<span className="text-sm sm:text-base">{unit}</span>
+          <span translate="no" className="text-xl sm:text-2xl font-display font-bold tabular-nums text-soil-ink whitespace-nowrap">
+            {value.toFixed(1)}<span className="text-sm sm:text-base ml-0.5">{unit}</span>
           </span>
         </div>
       </div>
@@ -52,6 +52,7 @@ const CircularGaugeCard = ({ value, min = 0, max = 100, label, unit, colorClass,
 export default function TelemetryDashboard({ isOffline, language = 'en' }) {
   const [current, setCurrent] = useState(null);
   const [history, setHistory] = useState([]);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
     const fetchTelemetry = async () => {
@@ -67,6 +68,9 @@ export default function TelemetryDashboard({ isOffline, language = 'en' }) {
         })));
       } catch (err) {
         console.error("Telemetry fetch error:", err);
+        if (!current) {
+          setError(true);
+        }
       }
     };
     
@@ -81,6 +85,16 @@ export default function TelemetryDashboard({ isOffline, language = 'en' }) {
     }
   }, [isOffline]);
 
+  if (error && !current) return (
+    <div className="flex flex-col items-center justify-center h-full min-h-[50vh] text-soil-ink/60">
+      <div className="mb-4 text-sindoor-rust">
+        <Activity size={32} />
+      </div>
+      <p>Unable to connect to backend.</p>
+      <p className="text-sm">Please ensure the backend is running.</p>
+    </div>
+  );
+
   if (!current) return (
     <div className="flex items-center justify-center h-full min-h-[50vh]">
       <div className="w-8 h-8 border-4 border-soil-ink/10 border-t-well-water-blue rounded-full animate-spin"></div>
@@ -91,7 +105,7 @@ export default function TelemetryDashboard({ isOffline, language = 'en' }) {
     <div className="w-full h-full flex flex-col space-y-6 sm:space-y-8 animate-in fade-in duration-700 pb-28 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-8 max-w-7xl mx-auto">
       
       {/* 1. Header Area */}
-      <header className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 sm:gap-6">
+      <header className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 sm:gap-6">
         <div>
           <h1 className="font-serif text-3xl sm:text-4xl text-soil-ink font-semibold leading-tight tracking-tight">Field Overview</h1>
           <div className="flex items-center space-x-2 mt-3 sm:mt-4">
@@ -114,7 +128,7 @@ export default function TelemetryDashboard({ isOffline, language = 'en' }) {
             <div className="absolute w-2.5 h-2.5 sm:w-3 sm:h-3 bg-leaf-green rounded-full animate-ping opacity-75"></div>
             <div className="relative w-1.5 h-1.5 sm:w-2 sm:h-2 bg-leaf-green rounded-full shadow-[0_0_8px_#3F6B4A]"></div>
           </div>
-          <span className="font-sans font-bold text-[10px] sm:text-xs uppercase tracking-widest text-soil-ink">Sector Alpha &middot; Wheat</span>
+          <span className="font-sans font-bold text-[10px] sm:text-xs uppercase tracking-widest text-soil-ink">Sector Alpha</span>
         </div>
       </header>
 
@@ -131,7 +145,7 @@ export default function TelemetryDashboard({ isOffline, language = 'en' }) {
 
       {/* 3. Trends Area Chart */}
       <div className="bg-white/70 backdrop-blur-2xl border border-soil-ink/10 rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-8 flex flex-col shadow-[0_8px_32px_rgba(43,36,25,0.05)]">
-        <h2 className="font-sans font-bold text-base sm:text-lg text-soil-ink mb-4 sm:mb-6">24-Hour Trends</h2>
+        <h2 className="font-sans font-bold text-base sm:text-lg text-soil-ink mb-4 sm:mb-6">24-Hour Soil Moisture Trends</h2>
         
         <div className="w-full h-64 sm:h-[350px] font-sans text-xs sm:text-sm tabular-nums">
           <ResponsiveContainer width="100%" height="100%">

@@ -6,3 +6,4 @@ opencv-python-headless>=4.9.0.80
 python-multipart>=0.0.9
 tensorflow>=2.15.0
 python-dotenv>=1.0.1
+google-genai>=0.1.1

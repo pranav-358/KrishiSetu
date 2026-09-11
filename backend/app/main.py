@@ -19,7 +19,7 @@ load_dotenv()
 # Safely grab the key from the .env file
 client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
 
-app = FastAPI(title="KrishiSetu API")
+app = FastAPI(title="AgroEdge API")
 
 app.add_middleware(
     CORSMiddleware,
@@ -85,7 +85,12 @@ def get_latest_telemetry(db: Session = Depends(get_db)):
 @app.get("/api/telemetry/history")
 def get_telemetry_history(hours: int = 24, db: Session = Depends(get_db)):
     cutoff = datetime.utcnow() - timedelta(hours=hours)
-    return db.query(SensorLog).filter(SensorLog.timestamp >= cutoff).order_by(SensorLog.timestamp.asc()).all()
+    records = db.query(SensorLog).filter(SensorLog.timestamp >= cutoff).order_by(SensorLog.timestamp.asc()).all()
+    # Downsample to a maximum of ~100 points for better UI performance
+    if len(records) > 100:
+        step = len(records) // 100
+        records = records[::step]
+    return records
 
 @app.get("/api/alerts")
 def get_alerts(db: Session = Depends(get_db)):
