@@ -59,6 +59,9 @@ def process_and_diagnose(file_bytes: bytes):
     confidence = float(predictions[best_idx]) * 100
     predicted_class = CLASS_NAMES[best_idx]
 
+    if "soyabean" in predicted_class.lower() and "dataset" in predicted_class.lower():
+        predicted_class = "Soybean___Rust"
+
     clean_name = predicted_class.replace("___", ": ").replace("_", " ")
 
     # 6. Database Smart Search
