@@ -1,8 +1,8 @@
-# 🌾 AgroEdge — Smart Farming AI
+# 🌾 AgriEdge — Smart Farming AI
 
 > AI-powered crop disease detection and agricultural monitoring assistant
 
-AgroEdge is an AI-driven smart farming prototype that helps farmers detect crop diseases early. Users upload or capture a crop leaf image through a web dashboard, and the system analyzes it using a trained deep learning model to predict the disease and display the result instantly.
+AgriEdge is an AI-driven smart farming prototype that helps farmers detect crop diseases early. Users upload or capture a crop leaf image through a web dashboard, and the system analyzes it using a trained deep learning model to predict the disease and display the result instantly.
 
 🚧 **Project Status:** Active Development / Prototype
 
@@ -30,7 +30,7 @@ Farmers often struggle to identify crop diseases at an early stage. Traditional 
 
 ### 💡 Solution
 
-AgroEdge uses computer vision and deep learning to analyze crop leaf images and instantly predict the disease, giving farmers a fast, low-cost diagnostic tool.
+AgriEdge uses computer vision and deep learning to analyze crop leaf images and instantly predict the disease, giving farmers a fast, low-cost diagnostic tool.
 
 
 The model has a built-in **Rescaling** layer that converts pixel values from `0–255` to `-1 to 1`, so no manual normalization is needed before inference.
@@ -118,7 +118,7 @@ Open two terminals — one for backend, one for frontend — then visit `http://
     → TensorFlow Lite → MobileNetV2 → Prediction → JSON Response → Dashboard
 
 
-### 🌾 AgroEdge
+### 🌾 AgriEdge
 > "Connecting Farmers with AI for Smarter, Healthier Crops."
 
 ⭐ If you find this project useful, consider giving the repository a star!

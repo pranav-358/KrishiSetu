@@ -47,7 +47,7 @@ export default function App() {
               <div className="flex items-center justify-center w-8 h-8 rounded-full bg-husk-cream shadow-sm group-hover:shadow-[0_0_15px_rgba(245,239,230,0.3)] transition-all">
                 <Sprout size={18} className="text-leaf-green" />
               </div>
-              <span className="font-serif font-semibold text-lg sm:text-xl tracking-tight">AgroEdge</span>
+              <span className="font-serif font-semibold text-lg sm:text-xl tracking-tight">AgriEdge</span>
             </div>
 
             {/* Desktop Nav Links (hidden on mobile) */}

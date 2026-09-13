@@ -4,22 +4,22 @@ import random
 import math
 from dotenv import load_dotenv
 from google import genai
-from app.models import AdvisoryRequest
 from datetime import datetime, timedelta
 from fastapi import FastAPI, Depends, UploadFile, File, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
-from .models import SessionLocal, SensorLog, AdvisoryAlert, ControlState, AdviceRequest, AdviceResponse
+
+# Local imports
+from .models import SessionLocal, SensorLog, AdvisoryAlert, ControlState, AdvisoryRequest
 from .agronomy import evaluate_conditions
 from .diagnosis import process_and_diagnose
-from .advisory_llm import generate_agronomy_advice
 
 load_dotenv()
 
 # Safely grab the key from the .env file
 client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
 
-app = FastAPI(title="AgroEdge API")
+app = FastAPI(title="AgriEdge API")
 
 app.add_middleware(
     CORSMiddleware,
@@ -118,8 +118,6 @@ def update_controls(state: ControlState):
 def get_controls():
     return demo_state
 
-
-
 @app.post("/api/diagnose")
 async def diagnose_image(file: UploadFile = File(...)):
     if not file.filename.lower().endswith(('.png', '.jpg', '.jpeg')):
@@ -148,7 +146,6 @@ async def diagnose_image(file: UploadFile = File(...)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-
 @app.post("/api/advice")
 async def generate_ai_advisory(request: AdvisoryRequest):
     try:
@@ -175,13 +172,13 @@ async def generate_ai_advisory(request: AdvisoryRequest):
         Keep the tone professional, concise, and highly specific. Do not use generic greetings.
         """
 
-        # Generate the response
+        # Generate the response using Gemini 3.6 Flash
         response = client.models.generate_content(
-            model='gemini-3.6-flash', # <--- CHANGE THIS LINE!
+            model='gemini-3.6-flash',
             contents=prompt
         )
         
-        # --- THE FIX: Handle Safety Filter Blocks and None values ---
+        # Handle Safety Filter Blocks and None values
         advice_text = response.text
         
         if not advice_text:
