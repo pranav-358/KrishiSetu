@@ -8,6 +8,7 @@ from datetime import datetime, timedelta
 from fastapi import FastAPI, Depends, UploadFile, File, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
+from pydantic import BaseModel  # <-- ADDED for Voice Assistant
 
 # Local imports
 from .models import SessionLocal, SensorLog, AdvisoryAlert, ControlState, AdvisoryRequest
@@ -190,3 +191,42 @@ async def generate_ai_advisory(request: AdvisoryRequest):
     except Exception as e:
         print(f"GenAI Error: {e}")
         return {"advice": "⚠️ Error: Unable to reach the AI Agronomy model. Please try again."}
+
+# --- NEW: Voice Assistant Endpoint ---
+class VoiceQuery(BaseModel):
+    query: str
+    language: str
+
+@app.post("/api/voice-chat")
+async def voice_chat(request: VoiceQuery):
+    try:
+        # 1. Map the 2-letter code to the actual language name
+        lang_map = {
+            "hi": "Hindi",
+            "mr": "Marathi",
+            "en": "English"
+        }
+        actual_language = lang_map.get(request.language, "English")
+
+        # 2. Force Gemini to use that specific language
+        prompt = f"""
+        You are a helpful Indian farming assistant. 
+        A farmer asks: '{request.query}'. 
+        Answer in 1 or 2 short, simple sentences. 
+        CRITICAL INSTRUCTION: You MUST write your entire response strictly in {actual_language}. Do not use English words unless absolutely necessary.
+        """
+        
+        response = client.models.generate_content(
+            model='gemini-3.6-flash',
+            contents=prompt
+        )
+        
+        answer_text = response.text
+        if not answer_text:
+            # Provide a fallback error in Hindi if the AI blocks it
+            answer_text = "Mujhe samajh nahi aaya, kripya dobara kahein." if actual_language == "Hindi" else "I'm sorry, I couldn't process that."
+            
+        return {"answer": str(answer_text)}
+    except Exception as e:
+        print(f"Voice Chat Error: {e}")
+        return {"answer": "Network connection error. Please try again."}

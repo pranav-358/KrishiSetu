@@ -3,6 +3,7 @@ import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'rec
 import { Thermometer, Droplets, Wind, Search, Activity } from 'lucide-react';
 import { api } from '../services/api';
 import RiskForecastCard from './RiskForecastCard';
+import HardwareSyncPanel from './HardwareSyncPanel'; // <-- NEW IMPORT
 
 const CircularGaugeCard = ({ value, min = 0, max = 100, label, unit, colorClass, Icon }) => {
   const radius = 52;
@@ -15,7 +16,6 @@ const CircularGaugeCard = ({ value, min = 0, max = 100, label, unit, colorClass,
       {/* Left side: Circular Gauge */}
       <div className="relative flex items-center justify-center shrink-0">
         <svg className="transform -rotate-90 w-[100px] h-[100px] sm:w-[120px] sm:h-[120px]">
-          {/* Responsive circle sizing via viewBox trick or scaling. For fixed radius, SVG scales based on CSS width/height if viewBox is set. Let's add viewBox to make it truly fluid inside its container. */}
           <svg viewBox="0 0 120 120" className="w-full h-full overflow-visible">
             <circle cx="60" cy="60" r={radius} stroke="currentColor" strokeWidth="8" fill="transparent" className="text-soil-ink/5" />
             <circle cx="60" cy="60" r={radius} stroke="currentColor" strokeWidth="8" fill="transparent" 
@@ -131,9 +131,19 @@ export default function TelemetryDashboard({ isOffline, language = 'en' }) {
           <span className="font-sans font-bold text-[10px] sm:text-xs uppercase tracking-widest text-soil-ink">Sector Alpha</span>
         </div>
       </header>
-
+      
       {/* Priority Risk Forecast */}
-      <RiskForecastCard type="heat" language={language} />
+      <RiskForecastCard 
+        temperature={current.temperature} 
+        moisture={current.moisture_pct} 
+        language={language} 
+      />
+
+      {/* NEW: Edge Hardware Simulation Panel */}
+      <HardwareSyncPanel 
+        moisture={current.moisture_pct} 
+        language={language} 
+      />
 
       {/* 2. Glassmorphism Metric Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
@@ -181,9 +191,6 @@ export default function TelemetryDashboard({ isOffline, language = 'en' }) {
           </ResponsiveContainer>
         </div>
       </div>
-
-
-
     </div>
   );
 }

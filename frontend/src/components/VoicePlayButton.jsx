@@ -3,20 +3,36 @@ import { Volume2, Square } from 'lucide-react';
 
 export default function VoicePlayButton({ text, language = "en" }) {
   const [isPlaying, setIsPlaying] = useState(false);
+  const [isSupported, setIsSupported] = useState(true);
 
   useEffect(() => {
+    // Safely check if the Android WebView supports the Speech API
+    if (typeof window === 'undefined' || !('speechSynthesis' in window) || !('SpeechSynthesisUtterance' in window)) {
+      setIsSupported(false);
+    }
+
     return () => {
-      window.speechSynthesis.cancel();
+      // Safely cancel speech only if the engine exists
+      if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+      }
     };
   }, []);
 
   const handleToggle = () => {
+    // Prevent the crash by catching unsupported mobile devices early
+    if (!isSupported) {
+      alert(language === 'hi' ? 'आपके डिवाइस पर आवाज़ समर्थित नहीं है।' : 'Text-to-speech is not supported on this mobile device.');
+      return;
+    }
+
     if (isPlaying) {
       window.speechSynthesis.cancel();
       setIsPlaying(false);
     } else {
       if (!text) return;
       window.speechSynthesis.cancel();
+      
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = language === 'hi' ? 'hi-IN' : 'en-IN';
       

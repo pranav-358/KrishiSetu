@@ -16,6 +16,6 @@ export const api = {
       headers: { 'Content-Type': 'multipart/form-data' }
     });
   },
-  getAIAdvice: (data) => axios.post(`${API_BASE}/advice`, data)
+  getAIAdvice: (data) => axios.post(`${API_BASE}/advice`, data),
+  askVoiceAssistant: (query, language) => axios.post(`${API_BASE}/voice-chat`, { query, language })
 };
-

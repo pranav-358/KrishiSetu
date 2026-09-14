@@ -45,3 +45,9 @@ Thumbs.db
 database.sqlite3
 
 backend/.env
+
+# =========================
+# 5. Mobile Builds
+# =========================
+*.apk
+*.aab

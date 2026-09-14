@@ -7,6 +7,7 @@ import LandingPage from './components/LandingPage';
 import AIAdvisory from './components/AIAdvisory';
 import LanguageToggle from './components/LanguageToggle';
 import SyncStatusToggle from './components/SyncStatusToggle';
+import GlobalVoiceAssistant from './components/GlobalVoiceAssistant'; // <-- ADDED IMPORT
 
 export default function App() {
   const [hasStarted, setHasStarted] = useState(false);
@@ -168,6 +169,10 @@ export default function App() {
       </main>
 
       <AdminDrawer open={adminOpen} onClose={() => setAdminOpen(false)} />
+      
+      {/* ADDED: Global Voice Assistant floats over everything */}
+      <GlobalVoiceAssistant language={language} />
+
     </div>
   );
 }

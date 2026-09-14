@@ -1,0 +1,39 @@
+{
+  "expo": {
+    "name": "AgriEdge",
+    "slug": "agriedge",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "backgroundColor": "#2e7d32"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#2e7d32"
+      },
+      "permissions": [
+        "CAMERA",
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE"
+      ],
+      "package": "com.teamagroedge.agriedge"
+    },
+    "plugins": [
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "usesCleartextTraffic": true
+          }
+        }
+      ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "cc16aa59-9ad8-46a9-9c03-d7fcfe74befa"
+      }
+    }
+  }
+}
